@@ -55,6 +55,8 @@ flutter:
     - assets/donate.png
     - assets/click.png
     - assets/share.png
+    - assets/night.png
+    - assets/day.png
     - assets/about.png
     - assets/home.png
     - assets/list.png

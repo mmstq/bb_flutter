@@ -1,11 +1,11 @@
 import 'package:bookbuddy/UI/logout_dialog.dart';
 import 'package:bookbuddy/UI/sell.dart';
 import 'package:flutter/material.dart';
-
 import 'detailscreen.dart';
 
 class MainScreen extends StatelessWidget {
   final fFamily = "TitilliumWeb";
+  bool _isDark = false;
 
   @override
   Widget build(BuildContext context) {
@@ -15,57 +15,103 @@ class MainScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text("BookBuddy"),
         ),
-        drawer: new Drawer(
-          child: Container(
-            color: Color(0xFF1c2b3d),
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Container(
-                  height: screen.height * .28,
-                  child: new DrawerHeader(
-                    padding: EdgeInsets.all(0),
-                    margin: EdgeInsets.all(0),
-                    child: new Image.asset(
-                      'assets/header.jpg',
-                      fit: BoxFit.fill,
+        drawer: SizedBox(
+          width: screen.width * 0.65,
+          child: Drawer(
+            child: Container(
+              width: 10,
+              color: Color(0xFF1c2b3d),
+              child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Container(
+                    height: screen.height * .28,
+                    child: new DrawerHeader(
+                      padding: EdgeInsets.all(0),
+                      margin: EdgeInsets.all(0),
+                      child: new Image.asset(
+                        'assets/header.jpg',
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 10,),
-                new ListTile(
-                  leading: Image.asset('assets/home.png',width: 30,),
-                  title: new Text('Home',style: TextStyle(color: Colors.white),),
-                  onTap: () {
-                    onMenuClick(0, context);
-                  },
-                ),
-                new Divider(),
-                new ListTile(
-                  leading: Image.asset('assets/share.png',width: 30,),
-                  title: new Text('Home',style: TextStyle(color: Colors.white),),
-                  onTap: () {},
-                ),
-                new Divider(),
-                new ListTile(
-                  leading: Image.asset('assets/click.png',width: 30,),
-                  title: new Text('Home',style: TextStyle(color: Colors.white),),
-                  onTap: () {},
-                ),
-                new Divider(),
-                new ListTile(
-                  leading: Image.asset('assets/about.png',width: 30,),
-                  title: new Text('Home',style: TextStyle(color: Colors.white),),
-                  onTap: () {},
-                ),
-                new Divider(),
-                new ListTile(
-                  leading: Image.asset('assets/donate.png',width: 30,),
-                  title: new Text('Home',style: TextStyle(color: Colors.white),),
-                  onTap: () {},
-                ),
-              ],
+                  SizedBox(
+                    height: 10,
+                  ),
+                  new ListTile(
+                    leading: Image.asset(
+                      'assets/home.png',
+                      width: 30,
+                    ),
+                    title: new Text(
+                      'Home',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {
+                      onMenuClick(0, context);
+                    },
+                  ),
+                  new Divider(),
+                  new ListTile(
+                    leading: Image.asset(
+                      'assets/share.png',
+                      width: 30,
+                    ),
+                    title: new Text(
+                      'Share',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {},
+                  ),
+                  new Divider(),
+                  new ListTile(
+                    leading: Image.asset(
+                      'assets/click.png',
+                      width: 30,
+                    ),
+                    title: new Text(
+                      'Click Me',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {},
+                  ),
+                  new Divider(),
+                  new ListTile(
+                    leading: Image.asset(
+                      'assets/about.png',
+                      width: 30,
+                    ),
+                    title: new Text(
+                      'About',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {},
+                  ),
+                  new Divider(),
+                  new ListTile(
+                    leading: Image.asset(
+                      'assets/donate.png',
+                      width: 30,
+                    ),
+                    title: new Text(
+                      'Donate',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {},
+                  ),
+                  Spacer(),
+                  Center(
+                    child: new Switch(
+                        value: _isDark,
+                        activeThumbImage: AssetImage('assets/night.png'),
+                        inactiveThumbImage: AssetImage('assets/day.png'),
+                        onChanged: (bool value) {
+                          debugPrint(value.toString());
+                        }),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -275,10 +321,10 @@ class MainScreen extends StatelessWidget {
           ),
         ));
   }
-  void onMenuClick(int id, BuildContext context){
-//    Navigator.push(context, MaterialPageRoute(builder: (_));
-    Route route = MaterialPageRoute(builder: (_)=> new MainScreen());
-    debugPrint(route.isCurrent.toString());
 
+  void onMenuClick(int id, BuildContext context) {
+//    Navigator.push(context, MaterialPageRoute(builder: (_));
+    Route route = MaterialPageRoute(builder: (_) => new MainScreen());
+    debugPrint(route.isCurrent.toString());
   }
 }
