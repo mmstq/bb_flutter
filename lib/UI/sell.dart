@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 
 class Sell extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return SellState();
-  }
+  State<StatefulWidget> createState() =>_SellState();
 }
 
-class SellState extends State<Sell> {
+class _SellState extends State<Sell> {
   final Map<String, dynamic> _map = new Map();
   final _key = GlobalKey();
   final _enableBorder = const OutlineInputBorder(

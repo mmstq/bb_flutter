@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const fFamily = " ";
 
 class DetailedScreen extends StatelessWidget {
-  final docs;
+  final _docs;
 
-  DetailedScreen({this.docs});
+  DetailedScreen(this._docs);
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +19,13 @@ class DetailedScreen extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             child: Hero(
-                tag: "main${docs['time']}",
+                tag: "main${_docs['time']}",
                 child: FadeInImage.assetNetwork(
                     height: 300,
                     width: screen.width,
                     fit: BoxFit.fill,
-                    placeholder: docs['thumbnail'],
-                    image: docs['image'])),
+                    placeholder: _docs['thumbnail'],
+                    image: _docs['image'])),
             onTap: () {
               Navigator.pop(context);
             },
@@ -61,11 +60,10 @@ class DetailedScreen extends StatelessWidget {
                   height: 10,
                 ),
                 Text(
-                  docs['book'] ?? 'null',
+                  _docs['book'] ?? 'null',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 20,
-                      color: Colors.white,
                       fontFamily: fFamily,
                       fontWeight: FontWeight.w400),
                 ),
@@ -73,7 +71,7 @@ class DetailedScreen extends StatelessWidget {
                   height: 8,
                 ),
                 Text(
-                  docs['description'],
+                  _docs['description'],
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 5,
@@ -97,7 +95,7 @@ class DetailedScreen extends StatelessWidget {
                             fontFamily: fFamily,
                             fontWeight: FontWeight.w600)),
                     TextSpan(
-                        text: docs['address'],
+                        text: _docs['address'],
                         style: TextStyle(
                             fontSize: 17,
                             color: Colors.white70,
@@ -114,7 +112,7 @@ class DetailedScreen extends StatelessWidget {
                             fontFamily: fFamily,
                             fontWeight: FontWeight.w600)),
                     TextSpan(
-                        text: getTime(docs['time']),
+                        text: _getTime(_docs['time']),
                         style: TextStyle(
                             fontSize: 17,
                             color: Colors.white70,
@@ -131,7 +129,7 @@ class DetailedScreen extends StatelessWidget {
                             fontFamily: fFamily,
                             fontWeight: FontWeight.w600)),
                     TextSpan(
-                        text: docs['category'],
+                        text: _docs['category'],
                         style: TextStyle(
                             fontSize: 17,
                             color: Colors.white70,
@@ -144,7 +142,7 @@ class DetailedScreen extends StatelessWidget {
                             fontFamily: fFamily,
                             fontWeight: FontWeight.w600)),
                     TextSpan(
-                        text: docs['semester'],
+                        text: _docs['semester'],
                         style: TextStyle(
                             fontSize: 17,
                             color: Colors.white70,
@@ -157,10 +155,10 @@ class DetailedScreen extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(1),
                   child: Text(
-                    "  ${docs['price']}  ",
+                    "  ${_docs['price']}  ",
                     style: TextStyle(
                         color: Colors.white,
-                        backgroundColor: (docs['price'] == 'Free')
+                        backgroundColor: (_docs['price'] == 'Free')
                             ? Colors.green
                             : Colors.deepOrange,
 //                        fontFamily: fFamily,
@@ -179,7 +177,7 @@ class DetailedScreen extends StatelessWidget {
                       width: 25,
                       height: 23,
                     ),
-                    Text("  ${docs['phone']}",
+                    Text("  ${_docs['phone']}",
                         style: TextStyle(
                             fontSize: 20,
                             color: Colors.white,
@@ -218,7 +216,7 @@ class DetailedScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20)),
                       color: Colors.lightGreenAccent,
                       onPressed: () async {
-                        final tel = "tel:${docs['phone']}";
+                        final tel = "tel:${_docs['phone']}";
                         if (await canLaunch(tel)) {
                           await launch(tel);
                         } else {
@@ -251,34 +249,32 @@ class DetailedScreen extends StatelessWidget {
 
 enum Category { All, BTech, MTech, Law, PhD, Medical, Other, Free }
 
-class ListScreen extends StatefulWidget {
+class Buy extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    print("createState");
-    return ListScreenState();
+    return _BuyState();
   }
 }
 
-class ListScreenState extends State<ListScreen> {
+class _BuyState extends State<Buy> {
 
-var stream = getSort(Category.All);
+var _stream = _getSort(Category.All);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: <Widget>[getMenu()],
+        actions: <Widget>[_getMenu()],
         title: Text("BookBuddy"),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream:  stream,
+        stream:  _stream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           final _width = MediaQuery.of(context).size.width;
           if (snapshot.hasData) {
             return ListView(
                 children: snapshot.data.documents.map((docs) {
               if (!docs["isDeleted"]) {
-                debugPrint("datafordocs if: "+docs.data.toString());
                 return Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: Card(
@@ -336,7 +332,7 @@ var stream = getSort(Category.All);
                                       context,
                                       MaterialPageRoute(
                                           builder: (_) =>
-                                              new DetailedScreen(docs: docs)));
+                                              new DetailedScreen(docs)));
                                 },
                                 child: Container(
                                   constraints: new BoxConstraints(
@@ -374,7 +370,7 @@ var stream = getSort(Category.All);
                                         height: 4,
                                       ),
                                       new Text(
-                                        " ${getTime(docs['time'])}",
+                                        " ${_getTime(docs['time'])}",
                                         style: TextStyle(
                                             color: Colors.grey.shade700,
                                             fontFamily: fFamily,
@@ -405,13 +401,13 @@ var stream = getSort(Category.All);
     );
   }
 
-  PopupMenuButton<Category> getMenu() {
+  PopupMenuButton<Category> _getMenu() {
     final style = TextStyle(fontFamily: fFamily, color: Colors.white70);
 
     return PopupMenuButton<Category>(
       icon: Icon(Icons.sort),
       onSelected: (Category result) {
-        stream = getSort(result);
+        _stream = _getSort(result);
         setState(() {
 
         });
@@ -468,7 +464,7 @@ var stream = getSort(Category.All);
   }
 }
 
-Stream<QuerySnapshot> getSort(Category category) {
+Stream<QuerySnapshot> _getSort(Category category) {
   CollectionReference collectionReference =
       Firestore.instance.collection('ads');
   var query;
@@ -499,7 +495,7 @@ Stream<QuerySnapshot> getSort(Category category) {
   return query.snapshots();
 }
 
-String getTime(int time) {
+String _getTime(int time) {
   final f = new DateFormat('E, dd-MM-yy hh:mm a');
   return f.format(new DateTime.fromMillisecondsSinceEpoch(time));
 }
