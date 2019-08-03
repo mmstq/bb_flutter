@@ -11,9 +11,6 @@ class OtpDialog extends StatefulWidget {
 }
 
 class _OtpDialogState extends State<OtpDialog> {
-  final _countController = StreamController();
-
-  Stream get _counting => _countController.stream;
   final TextEditingController _otpController = new TextEditingController();
   Timer _timer;
 
@@ -31,7 +28,7 @@ class _OtpDialogState extends State<OtpDialog> {
 
   @override
   void dispose() {
-    _countController.close();
+    countController.close();
     _timer.cancel();
     super.dispose();
   }
@@ -126,7 +123,7 @@ class _OtpDialogState extends State<OtpDialog> {
             ),
           ),
           StreamBuilder(
-            stream: _counting,
+            stream: counting,
             initialData: 5,
             builder: (context, snapshot) {
               if (snapshot.data != 0) {
@@ -160,8 +157,10 @@ class _OtpDialogState extends State<OtpDialog> {
                     ),
                   ],
                 );
-              }else if(snapshot.data == 10){
-                return Text("Wrong OTP Entered", style: TextStyle(fontSize: 15, fontFamily: fFamily,color: Colors.red));
+              } else if (snapshot.data == 10) {
+                return Text("Wrong OTP Entered",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: fFamily, color: Colors.red));
               }
               return Text(
                 "Enter OTP manually",
@@ -194,7 +193,7 @@ class _OtpDialogState extends State<OtpDialog> {
                 fontSize: 18),
           ),
           onPressed: () {
-            _countController.close();
+            countController.close();
             Navigator.pop(context);
           },
         ),
@@ -228,12 +227,11 @@ class _OtpDialogState extends State<OtpDialog> {
     _timer = Timer.periodic(Duration(seconds: 1), (value) {
       if (count < 1) {
         _timer.cancel();
-        _countController.add(0);
-        _countController.close();
+        countController.add(0);
       } else {
         print("else: $count");
         count -= 1;
-        _countController.add(count);
+        countController.add(count);
       }
     });
   }
@@ -250,10 +248,8 @@ class _OtpDialogState extends State<OtpDialog> {
 //        Navigator.of(context).pop();
         print('success');
 //        Navigator.of(context).pushNamedAndRemoveUntil('Main', (Route<dynamic> route)=> false);
-      } else {
-        print('failed');
-        _countController.add(10);
-        _countController.close();
+      }else{
+        print("else of SIWPN");
       }
     });
   }

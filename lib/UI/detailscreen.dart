@@ -5,6 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+Widget getImage(var docs) {
+  final String image = docs['image'];
+  if (image == null) {
+    return Image.asset(
+      'assets/no_image.jpg',
+      height: height * 0.47,
+      width: width,
+      fit: BoxFit.fill,
+    );
+  }
+  return FadeInImage.assetNetwork(
+      height: height * 0.47,
+      width: width,
+      fit: BoxFit.fill,
+      placeholder: docs['thumbnail'],
+      image: docs['image']);
+}
 
 class DetailedScreen extends StatelessWidget {
   final _docs;
@@ -13,76 +30,93 @@ class DetailedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screen = MediaQuery.of(context).size;
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          GestureDetector(
-            child: Hero(
-                tag: "main${_docs['time']}",
-                child: FadeInImage.assetNetwork(
-                    height: 300,
-                    width: screen.width,
-                    fit: BoxFit.fill,
-                    placeholder: _docs['thumbnail'],
-                    image: _docs['image'])),
-            onTap: () {
-              Navigator.pop(context);
+      floatingActionButton: Builder(
+        builder: (context) {
+          return FloatingActionButton(
+            child: Icon(Icons.call),
+            tooltip: "Make Call",
+            backgroundColor: Colors.lightGreenAccent.shade700,
+            heroTag: "floatingActionButton",
+            onPressed: () async {
+              final tel = "tel:${_docs['phone']}";
+              if (await canLaunch(tel)) {
+                await launch(tel);
+              } else {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Not a valid number"),
+                    duration: Duration(milliseconds: 1000),
+                  ),
+                );
+              }
             },
-          ),
-          Container(
-            height: 1,
-            width: screen.width,
-            color: Colors.deepOrange,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 8.0),
-            child: Column(
+          );
+        }
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            GestureDetector(
+              child: Hero(tag: "main${_docs['time']}", child: getImage(_docs)),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            Container(
+              height: 1,
+              width: width,
+              color: Colors.deepOrange,
+            ),
+            SizedBox(
+              height: height * 0.01,
+            ),
+            Column(
               children: <Widget>[
                 Text(
                   "Details",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 25,
-                      color: Colors.grey,
+                      fontSize: height * 0.033,
+                      color: Colors.white70,
                       fontFamily: fFamily,
                       fontWeight: FontWeight.w600),
                 ),
                 SizedBox(
-                  height: 8,
+                  height: height * 0.01,
                 ),
                 Container(
                   height: 0.2,
-                  width: screen.width * 0.8,
+                  width: width * 0.85,
                   color: Colors.white,
                 ),
                 SizedBox(
-                  height: 10,
+                  height: height * 0.015,
                 ),
-                Text(
-                  _docs['book'] ?? 'null',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: fFamily,
-                      fontWeight: FontWeight.w400),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                  child: Text(
+                    _docs['book'] ?? 'null',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: fFamily,
+                        fontWeight: FontWeight.w400),
+                  ),
                 ),
-                SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  _docs['description'],
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 5,
-                  style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 18,
-                      fontFamily: fFamily,
-                      fontWeight: FontWeight.w300),
-                ),
-                SizedBox(
-                  height: 6,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: Text(
+                    _docs['description'],
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 4,
+                    style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 18,
+                        fontFamily: fFamily,
+                        fontWeight: FontWeight.w300),
+                  ),
                 ),
                 RichText(
                   textAlign: TextAlign.start,
@@ -152,22 +186,24 @@ class DetailedScreen extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(1),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: (_docs['price'] == 'Free')
+                          ? Colors.green
+                          : Colors.deepOrange,
+                      shape: BoxShape.rectangle),
                   child: Text(
                     "  ${_docs['price']}  ",
                     style: TextStyle(
                         color: Colors.white,
-                        backgroundColor: (_docs['price'] == 'Free')
-                            ? Colors.green
-                            : Colors.deepOrange,
-//                        fontFamily: fFamily,
+                        fontFamily: fFamily,
                         fontWeight: FontWeight.w600,
                         fontSize: 16),
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -175,73 +211,21 @@ class DetailedScreen extends StatelessWidget {
                     Image.asset(
                       'assets/call.png',
                       width: 25,
-                      height: 23,
+                      height: 20,
                     ),
-                    Text("  ${_docs['phone']}",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontFamily: fFamily))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      color: Colors.deepOrangeAccent,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Icon(Icons.arrow_back),
-                          Text(
-                            "  Back",
-                            style: TextStyle(fontFamily: fFamily),
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 30,
-                    ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      color: Colors.lightGreenAccent,
-                      onPressed: () async {
-                        final tel = "tel:${_docs['phone']}";
-                        if (await canLaunch(tel)) {
-                          await launch(tel);
-                        } else {
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text("Not a valid number"),
-                          ));
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Icon(Icons.call),
-                          Text(
-                            "  Call",
-                            style: TextStyle(fontFamily: fFamily),
-                          )
-                        ],
-                      ),
+                    Text(
+                      "  ${_docs['phone']}",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontFamily: fFamily),
                     )
                   ],
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -257,8 +241,7 @@ class Buy extends StatefulWidget {
 }
 
 class _BuyState extends State<Buy> {
-
-var _stream = _getSort(Category.All);
+  var _stream = _getSort(Category.All);
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +251,7 @@ var _stream = _getSort(Category.All);
         title: Text("BookBuddy"),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream:  _stream,
+        stream: _stream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           final _width = MediaQuery.of(context).size.width;
           if (snapshot.hasData) {
@@ -296,11 +279,17 @@ var _stream = _getSort(Category.All);
                                       child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(5),
-                                          child: Image.network(
-                                            docs['thumbnail'],
-                                            height: 60,
-                                            fit: BoxFit.fill,
-                                          )),
+                                          child: docs['thumbnail'] != null
+                                              ? Image.network(
+                                                  docs['thumbnail'],
+                                                  height: 60,
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : Image.asset(
+                                                  'assets/no_image.jpg',
+                                                  height: 60,
+                                                  fit: BoxFit.fill,
+                                                )),
                                     ),
                                     SizedBox(
                                       height: 8,
@@ -386,8 +375,11 @@ var _stream = _getSort(Category.All);
                         ),
                       )),
                 );
-              } else{
-                return SizedBox(width: 0,height: 0,);
+              } else {
+                return SizedBox(
+                  width: 0,
+                  height: 0,
+                );
               }
             }).toList());
           } else {
@@ -408,9 +400,7 @@ var _stream = _getSort(Category.All);
       icon: Icon(Icons.sort),
       onSelected: (Category result) {
         _stream = _getSort(result);
-        setState(() {
-
-        });
+        setState(() {});
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Category>>[
         PopupMenuItem<Category>(
@@ -471,28 +461,23 @@ Stream<QuerySnapshot> _getSort(Category category) {
 
   if (category == Category.Medical) {
     query = collectionReference.where("category", isEqualTo: "Medical");
-  }
-  else if (category == Category.BTech) {
+  } else if (category == Category.BTech) {
     query = collectionReference.where("category", isEqualTo: "B.Tech");
-  }
-  else if (category == Category.MTech) {
+  } else if (category == Category.MTech) {
     query = collectionReference.where("category", isEqualTo: "M.Tech");
-  }
-  else if (category == Category.Law) {
+  } else if (category == Category.Law) {
     query = collectionReference.where("category", isEqualTo: "Law");
-  }
-  else if (category == Category.PhD) {
+  } else if (category == Category.PhD) {
     query = collectionReference.where("category", isEqualTo: "PhD");
-  }
-  else if (category == Category.Other) {
+  } else if (category == Category.Other) {
     query = collectionReference.where("category", isEqualTo: "Other");
-  }
-  else if (category == Category.Free) {
+  } else if (category == Category.Free) {
     query = collectionReference.where("price", isEqualTo: "Free");
   } else {
     query = collectionReference;
   }
-  return query.snapshots();
+
+  return query.orderBy('time',descending: true).snapshots();
 }
 
 String _getTime(int time) {

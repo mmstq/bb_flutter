@@ -8,13 +8,12 @@ import 'Utils/data.dart';
 
 void main() async {
   sharedPreference = await SharedPreferences.getInstance();
-  var user = await FirebaseAuth.instance.currentUser();
-  return runApp(MyApp(user));
+  user = await FirebaseAuth.instance.currentUser();
+  return runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final FirebaseUser user;
-  MyApp(this.user);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
       },
       title: 'Flutter Demo',
       theme: getTheme(isDark),
-      home: (user != null)
+      home: (user == null)
           ? MainScreen()
           : LoginPage(),
     );
@@ -40,7 +39,11 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         primaryColor: Color(0xFF0c141f),
         primaryColorDark: Color(0xFF090f17),
+        primaryColorLight: Color(0xFF141e2b),
         scaffoldBackgroundColor: Color(0xFF141e2b),
+        accentColor: Colors.blue,
+        dialogBackgroundColor: Color(0xFF1c2b3d),
+        primarySwatch: Colors.blue,
         cardColor: Color(0xFF1c2b3d),
       );
     }

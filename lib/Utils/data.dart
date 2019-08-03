@@ -1,7 +1,11 @@
 
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+
 bool isDark = true;
 bool isOTP = false;
-String phone = "N/A";
+FirebaseUser user;
+String phone = "+917011152375";
 final fFamily = "TitilliumWeb";
 double height = 0;
 bool isDialogDoneOneTime = false;
@@ -11,3 +15,11 @@ String verificationId;
 final phoneHelperText = "Enter number w/o +91";
 final loginDescription = "BookBuddy is an Unofficial MDU University exclusive app to buy, "
     "sell or donate used books within MDU Campus only.";
+
+final countController = StreamController();
+Stream get counting => countController.stream;
+
+
+void close(){
+  countController.close();
+}

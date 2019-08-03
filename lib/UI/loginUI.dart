@@ -1,4 +1,5 @@
-import 'package:bookbuddy/UI/main_screen.dart';
+import 'dart:async';
+
 import 'package:bookbuddy/UI/otp_dialog.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -204,7 +205,6 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _sendCodeToPhone(
       FirebaseAuth auth, BuildContext context, String phoneRaw) async {
-
     final PhoneVerificationCompleted verificationCompleted =
         (AuthCredential credential) {
       /*auth.signInWithCredential(credential).then((FirebaseUser user) async {
@@ -218,16 +218,14 @@ class _LoginPageState extends State<LoginPage> {
 
     final PhoneVerificationFailed phoneVerificationFailed =
         (AuthException authException) {
-      debugPrint('failed: ${authException.message}');
+      print("PVF: ${authException.message}");
+      countController.add(authException.message);
     };
 
     final PhoneCodeSent phoneCodeSent =
-        (String verifyId, [int forceResendingToken]) async {
+        (String verifyId, [int forceResendingToken]) {
       verificationId = verifyId;
-      setState(() {
-        _phoneController.text = "";
-        show();
-      });
+      show();
     };
 
     final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
@@ -255,4 +253,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
