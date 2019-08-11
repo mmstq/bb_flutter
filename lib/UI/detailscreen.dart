@@ -9,10 +9,10 @@ Widget getImage(var docs) {
   final String image = docs['image'];
   if (image == null) {
     return Image.asset(
-      'assets/no_image.jpg',
+      'assets/no_image.png',
       height: height * 0.47,
       width: width,
-      fit: BoxFit.fill,
+      fit: BoxFit.cover,
     );
   }
   return FadeInImage.assetNetwork(
@@ -31,29 +31,27 @@ class DetailedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Builder(
-        builder: (context) {
-          return FloatingActionButton(
-            child: Icon(Icons.call),
-            tooltip: "Make Call",
-            backgroundColor: Colors.lightGreenAccent.shade700,
-            heroTag: "floatingActionButton",
-            onPressed: () async {
-              final tel = "tel:${_docs['phone']}";
-              if (await canLaunch(tel)) {
-                await launch(tel);
-              } else {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("Not a valid number"),
-                    duration: Duration(milliseconds: 1000),
-                  ),
-                );
-              }
-            },
-          );
-        }
-      ),
+      floatingActionButton: Builder(builder: (context) {
+        return FloatingActionButton(
+          child: Icon(Icons.call),
+          tooltip: "Make Call",
+          backgroundColor: Colors.lightGreenAccent.shade700,
+          heroTag: "floatingActionButton",
+          onPressed: () async {
+            final tel = "tel:${_docs['phone']}";
+            if (await canLaunch(tel)) {
+              await launch(tel);
+            } else {
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Not a valid number"),
+                  duration: Duration(milliseconds: 1000),
+                ),
+              );
+            }
+          },
+        );
+      }),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -146,7 +144,7 @@ class DetailedScreen extends StatelessWidget {
                             fontFamily: fFamily,
                             fontWeight: FontWeight.w600)),
                     TextSpan(
-                        text: _getTime(_docs['time']),
+                        text: getTime(_docs['time']),
                         style: TextStyle(
                             fontSize: 17,
                             color: Colors.white70,
@@ -241,7 +239,9 @@ class Buy extends StatefulWidget {
 }
 
 class _BuyState extends State<Buy> {
-  var _stream = _getSort(Category.All);
+  Stream _stream = _getSort(Category.All);
+
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -250,146 +250,7 @@ class _BuyState extends State<Buy> {
         actions: <Widget>[_getMenu()],
         title: Text("BookBuddy"),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _stream,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          final _width = MediaQuery.of(context).size.width;
-          if (snapshot.hasData) {
-            return ListView(
-                children: snapshot.data.documents.map((docs) {
-              if (!docs["isDeleted"]) {
-                return Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Card(
-                      elevation: 8,
-                      child: Container(
-                        height: 110,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              Container(
-                                constraints:
-                                    new BoxConstraints(maxWidth: _width * 0.20),
-                                child: Column(
-                                  children: <Widget>[
-                                    Hero(
-                                      tag: "main${docs['time']}",
-                                      child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          child: docs['thumbnail'] != null
-                                              ? Image.network(
-                                                  docs['thumbnail'],
-                                                  height: 60,
-                                                  fit: BoxFit.fill,
-                                                )
-                                              : Image.asset(
-                                                  'assets/no_image.jpg',
-                                                  height: 60,
-                                                  fit: BoxFit.fill,
-                                                )),
-                                    ),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Center(
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(1),
-                                        child: Text(
-                                          " ${docs['price']} ",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              backgroundColor:
-                                                  (docs['price'] == 'Free')
-                                                      ? Colors.green
-                                                      : Colors.deepOrange),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                  mainAxisSize: MainAxisSize.min,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              new DetailedScreen(docs)));
-                                },
-                                child: Container(
-                                  constraints: new BoxConstraints(
-                                      maxWidth: _width * 0.70),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        docs['book'] ?? 'null',
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            color: Colors.white,
-                                            fontFamily: fFamily,
-                                            fontWeight: FontWeight.w400),
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: true,
-                                        maxLines: 1,
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 3.0),
-                                        child: Text(
-                                          docs['description'],
-                                          style: TextStyle(
-                                              color: Colors.white54,
-                                              fontFamily: fFamily,
-                                              height: 0.9,
-                                              fontWeight: FontWeight.w300),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 4,
-                                      ),
-                                      new Text(
-                                        " ${_getTime(docs['time'])}",
-                                        style: TextStyle(
-                                            color: Colors.grey.shade700,
-                                            fontFamily: fFamily,
-                                            fontWeight: FontWeight.w300),
-                                      )
-                                    ],
-                                    mainAxisSize: MainAxisSize.min,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      )),
-                );
-              } else {
-                return SizedBox(
-                  width: 0,
-                  height: 0,
-                );
-              }
-            }).toList());
-          } else {
-            return Center(
-                child: CircularProgressIndicator(
-              backgroundColor: Colors.white,
-            ));
-          }
-        },
-      ),
+      body: ListBuilder(_stream, false, _key),
     );
   }
 
@@ -477,10 +338,262 @@ Stream<QuerySnapshot> _getSort(Category category) {
     query = collectionReference;
   }
 
-  return query.orderBy('time',descending: true).snapshots();
+  return query.orderBy('time', descending: true).snapshots();
 }
 
-String _getTime(int time) {
+String getTime(int time) {
   final f = new DateFormat('E, dd-MM-yy hh:mm a');
-  return f.format(new DateTime.fromMillisecondsSinceEpoch(time));
+  return f.format(new DateTime.fromMillisecondsSinceEpoch(time * 1000));
+}
+
+class ListBuilder extends StatefulWidget {
+  final _stream;
+  final _isMyAds;
+  final _scaffoldKey;
+  var _uniqueKey;
+
+  ListBuilder(this._stream, this._isMyAds, this._scaffoldKey);
+
+  @override
+  _ListBuilderState createState() => _ListBuilderState();
+}
+
+class _ListBuilderState extends State<ListBuilder> {
+  final TextStyle _textStyle =
+      TextStyle(fontFamily: fFamily, fontWeight: FontWeight.w400, fontSize: 17);
+  var _animated = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: widget._stream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        final _width = MediaQuery.of(context).size.width;
+        if (snapshot.hasData) {
+          return ListView(
+              children: snapshot.data.documents.map((docs) {
+            if (!docs["isDeleted"]) {
+              return Padding(
+                padding: const EdgeInsets.all(0.0),
+                child: Card(
+                    elevation: 8,
+                    child: Container(
+                      height: 110,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            Container(
+                              constraints:
+                                  new BoxConstraints(maxWidth: _width * 0.20),
+                              child: Column(
+                                children: <Widget>[
+                                  Hero(
+                                    tag: "main${docs['time']}",
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(5),
+                                        child: docs['thumbnail'] != null
+                                            ? Image.network(
+                                                docs['thumbnail'],
+                                                height: 60,
+                                                fit: BoxFit.fill,
+                                              )
+                                            : Image.asset(
+                                                'assets/no_image.png',
+                                                height: 60,
+                                                fit: BoxFit.fill,
+                                              )),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  _priceOrDelete(docs),
+                                ],
+                                mainAxisSize: MainAxisSize.min,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            new DetailedScreen(docs)));
+                              },
+                              child: Container(
+                                constraints:
+                                    new BoxConstraints(maxWidth: _width * 0.70),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      docs['book'] ?? 'null',
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          color: Colors.white,
+                                          fontFamily: fFamily,
+                                          fontWeight: FontWeight.w400),
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: true,
+                                      maxLines: 1,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 3.0),
+                                      child: Text(
+                                        docs['description'],
+                                        style: TextStyle(
+                                            color: Colors.white54,
+                                            fontFamily: fFamily,
+                                            height: 0.9,
+                                            fontWeight: FontWeight.w300),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    new Text(
+                                      " ${getTime(docs['time'])}",
+                                      style: TextStyle(
+                                          color: Colors.grey.shade700,
+                                          fontFamily: fFamily,
+                                          fontWeight: FontWeight.w300),
+                                    )
+                                  ],
+                                  mainAxisSize: MainAxisSize.min,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+              );
+            } else {
+              return SizedBox(
+                width: 0,
+                height: 0,
+              );
+            }
+          }).toList());
+        } else {
+          return Center(
+              child: CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+          ));
+        }
+      },
+    );
+  }
+
+  void deleteAd(var docs) {
+    final reference = Firestore.instance;
+    DocumentReference dr = reference.collection('ad').document(docs['time']);
+    reference.runTransaction((transaction) async {
+      await transaction.delete(dr);
+      print('done');
+    });
+  }
+
+  Widget _priceOrDelete(var docs) {
+    if (widget._isMyAds) {
+      return AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return ScaleTransition(child: child, scale: animation);
+        },
+        child: (_animated && widget._uniqueKey == docs['time'])
+            ? Container(
+                height: 14,
+                width: 14,
+                child: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+                  strokeWidth: 1,
+                ),
+              )
+            : Container(
+                height: 25,
+                padding: EdgeInsets.fromLTRB(3, 0, 3, 1),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.red, width: 1),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.delete_outline,
+                      size: 15,
+                      color: Colors.red,
+                    ),
+                    GestureDetector(
+                      child: Text(
+                        " Delete",
+                        style:
+                            TextStyle(fontFamily: fFamily, color: Colors.red),
+                      ),
+                      onTap: () {
+                        widget._uniqueKey = docs['time'];
+                        setState(() {
+                          _animated = !_animated;
+                        });
+//                        _showUploadingSnackBar(Duration(minutes: 1));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+      );
+    }
+    return Center(
+      key: ValueKey<String>(docs['time'].toString()),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(1, 1, 1, 2),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            color: (docs['price'] == 'Free') ? Colors.green : Colors.deepOrange,
+            shape: BoxShape.rectangle),
+        child: Text(
+          "  ${docs['price']}  ",
+          style: TextStyle(
+              color: Colors.white,
+              fontFamily: fFamily,
+              fontWeight: FontWeight.w600,
+              fontSize: 12),
+        ),
+      ),
+    );
+  }
+
+  _showUploadingSnackBar(Duration duration) {
+    widget._scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 2,
+              )),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Uploading ad. Please wait...",
+            maxLines: 3,
+            style: _textStyle,
+          ),
+        ],
+      ),
+      duration: duration,
+      backgroundColor: Colors.indigo,
+    ));
+  }
 }

@@ -4,7 +4,6 @@ import 'package:bookbuddy/Utils/data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,6 +16,7 @@ class Sell extends StatefulWidget {
 class _SellState extends State<Sell> {
   final Map<String, dynamic> _map = new Map();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _enableBorder = const OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(6)),
     borderSide: BorderSide(color: Colors.white70),
@@ -46,10 +46,9 @@ class _SellState extends State<Sell> {
   var _isFree = false;
   File _photo;
   File _thumbnail;
-
   bool _count = false;
-
   int _timeStamp;
+  var _uploadTask;
 
   @override
   void initState() {
@@ -60,6 +59,7 @@ class _SellState extends State<Sell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           'Sell or Donate',
@@ -287,9 +287,12 @@ class _SellState extends State<Sell> {
                               Checkbox(
                                 value: _isFree,
                                 onChanged: ((value) {
+                                  print(value);
                                   setState(() {
-                                    _isFree = !_isFree;
-                                    _count = !_count;
+                                    if (value) _price = "Free";
+                                    print(_price);
+                                    _isFree = value;
+                                    _count = value;
                                   });
                                 }),
                               ),
@@ -299,7 +302,7 @@ class _SellState extends State<Sell> {
                                     fontFamily: fFamily,
                                     fontWeight: FontWeight.w300,
                                     fontSize: 16),
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -339,7 +342,7 @@ class _SellState extends State<Sell> {
                                 child: TextFormField(
                                   key: ValueKey<bool>(_count),
                                   onSaved: (String value) {
-                                    _price = value;
+                                    if (!_isFree) _price = "₹" + value;
                                   },
                                   validator: ((value) {
                                     if (value == "" && !_isFree) {
@@ -420,14 +423,15 @@ class _SellState extends State<Sell> {
     print(_category);
     if (_key.currentState.validate()) {
       if (_category == null) {
-        showSnackBar(context, "Select Category");
+        showSnackBar(
+            "Select a category", Colors.deepOrange, Duration(seconds: 2));
         return null;
       }
       _key.currentState.save();
       if (_photo == null) {
         _showNoImageDialog(context);
       } else {
-        _sendToServer();
+        _sendToServer(context);
       }
     } else {
       setState(() {
@@ -436,15 +440,43 @@ class _SellState extends State<Sell> {
     }
   }
 
-  void showSnackBar(BuildContext context, String msg) {
+  _showUploadingSnackBar(Duration duration) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 2,
+              )),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Uploading ad. Please wait...",
+            maxLines: 3,
+            style: _textStyle,
+          ),
+        ],
+      ),
+      duration: duration,
+      backgroundColor: Colors.indigo,
+    ));
+  }
+
+  void showSnackBar(String msg, Color color, Duration duration) {
     print('showSnackbar');
-    Scaffold.of(context).showSnackBar(SnackBar(
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
       content: Text(
         msg,
+        maxLines: 3,
         style: _textStyle,
       ),
-      duration: Duration(seconds: 3),
-      backgroundColor: Colors.red,
+      duration: duration,
+      backgroundColor: color,
     ));
   }
 
@@ -479,58 +511,84 @@ class _SellState extends State<Sell> {
   }
 
   Future<void> _imagePickerOption() {
-    print('imagePickerOption');
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                MaterialButton(
-                  padding: EdgeInsets.all(0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Icon(Icons.add_a_photo),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'Take a picture',
-                        style: _textStyle,
-                      ),
-                    ],
-                  ),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    _photo = await _openImagePicker(ImageSource.camera);
-                    setState(() {});
-                  },
+//          contentPadding: EdgeInsets.all(0),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              MaterialButton(
+                padding: EdgeInsets.only(left: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.add_a_photo),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      'Take a picture',
+                      style: _textStyle,
+                    ),
+                  ],
                 ),
-                MaterialButton(
-                  padding: EdgeInsets.all(0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Icon(Icons.add_photo_alternate),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      new Text(
-                        'Select from gallery',
-                        style: _textStyle,
-                      ),
-                    ],
-                  ),
-                  onPressed: () async {
-                    _photo = await _openImagePicker(ImageSource.gallery);
-                    setState(() {});
-                  },
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  _photo = await _openImagePicker(ImageSource.camera);
+                  setState(() {});
+                },
+              ),
+              MaterialButton(
+                padding: EdgeInsets.only(left: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.add_photo_alternate),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    new Text(
+                      'Select from gallery',
+                      style: _textStyle,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  _photo = await _openImagePicker(ImageSource.gallery);
+                  setState(() {});
+                },
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.deepOrange,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Consider taking photo in "
+                    "'Landscape Mode' for right "
+                    "image orientation.",
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: fFamily,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
           ),
+          elevation: 35,
+          backgroundColor: Colors.blueGrey.shade700,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5))),
         );
       },
     );
@@ -542,7 +600,6 @@ class _SellState extends State<Sell> {
         source: source, imageQuality: 10, maxHeight: 800, maxWidth: 800);
     final Directory directory = await getTemporaryDirectory();
     final copyFile = await _photo.copy('${directory.path}/photo.png');
-    _photo = await FlutterExifRotation.rotateImage(path: copyFile.path);
     final image = img.decodeImage(new File(copyFile.path).readAsBytesSync());
     _thumbnail = new File('${directory.path}/thumbnail.png')
       ..writeAsBytesSync(img.encodePng(img.copyResize(
@@ -551,7 +608,6 @@ class _SellState extends State<Sell> {
         height: 50,
       )));
     return _photo;
-
   }
 
   int _getCurrentTime() {
@@ -574,7 +630,7 @@ class _SellState extends State<Sell> {
         color: Colors.green.shade800,
       ),
       onPressed: () {
-        _sendToServer();
+        _sendToServer(context);
       },
     );
     Widget cancelButton = RaisedButton(
@@ -643,7 +699,8 @@ class _SellState extends State<Sell> {
     return url.toString();
   }
 
-  Future<void> _sendToServer() async {
+  Future<void> _sendToServer(BuildContext context) async {
+    _showUploadingSnackBar(Duration(hours: 1));
     print('sendToServer');
 
     if (_photo != null) {
@@ -655,6 +712,7 @@ class _SellState extends State<Sell> {
     _map['description'] = _description;
     _map['address'] = _address;
     _map['price'] = _price;
+    print(_price);
     _map['category'] = _category;
     _map['isDeleted'] = false;
     _map['phone'] = phone;
@@ -666,8 +724,22 @@ class _SellState extends State<Sell> {
     Firestore.instance.runTransaction((Transaction transaction) async {
       DocumentReference collectionReference =
           Firestore.instance.collection('ads').document(_timeStamp.toString());
-      await collectionReference.setData(_map).whenComplete((){
-
+      await collectionReference.setData(_map).whenComplete(() async {
+        _scaffoldKey.currentState.hideCurrentSnackBar();
+        await Future.delayed(Duration(milliseconds: 200));
+        showSnackBar(
+          "Done",
+          Colors.green.shade700,
+          Duration(seconds: 2),
+        );
+        await Future.delayed(Duration(milliseconds: 2200));
+        Navigator.of(context).pop();
+      }).catchError((error) {
+        showSnackBar(
+          error.toString(),
+          Colors.red,
+          Duration(seconds: 4),
+        );
       });
     });
 

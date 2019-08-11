@@ -1,4 +1,5 @@
 import 'package:bookbuddy/UI/logout_dialog.dart';
+import 'package:bookbuddy/UI/myads.dart';
 import 'package:bookbuddy/UI/sell.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:flutter/material.dart';
@@ -250,7 +251,11 @@ class MainScreen extends StatelessWidget {
                 Card(
                   color: Colors.lightBlue,
                   child: MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                       Navigator.push(context, MaterialPageRoute(builder: (_) {
+                        return new MyAds();
+                      }));
+                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       height: height * 0.12,
