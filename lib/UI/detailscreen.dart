@@ -491,34 +491,40 @@ class _ListBuilderState extends State<ListBuilder> {
     );
   }
 
-  void deleteAd(var docs) {
+  Future<bool> deleteAd(var docs) async {
     final reference = Firestore.instance;
-    DocumentReference dr = reference.collection('ad').document(docs['time']);
+    DocumentReference dr = reference.collection('ad').document(docs['time'].toString());
     reference.runTransaction((transaction) async {
-      await transaction.delete(dr);
-      print('done');
-    });
-  }
+      await transaction.delete(dr).then((value){
 
+        return true;
+      });
+    });
+    return false;
+  }
+ 
   Widget _priceOrDelete(var docs) {
     if (widget._isMyAds) {
       return AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 200),
         transitionBuilder: (Widget child, Animation<double> animation) {
           return ScaleTransition(child: child, scale: animation);
         },
         child: (_animated && widget._uniqueKey == docs['time'])
             ? Container(
-                height: 14,
-                width: 14,
+                key: ValueKey("first"),
+                padding: EdgeInsets.all(4),
+                height: 25,
+                width: 25,
                 child: CircularProgressIndicator(
                   valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
-                  strokeWidth: 1,
+                  strokeWidth: 1.5,
                 ),
               )
             : Container(
+                key: ValueKey("second"),
                 height: 25,
-                padding: EdgeInsets.fromLTRB(3, 0, 3, 1),
+                padding: EdgeInsets.fromLTRB(1, 0, 1, 1),
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.red, width: 1),
                     borderRadius: BorderRadius.circular(5)),
@@ -526,21 +532,20 @@ class _ListBuilderState extends State<ListBuilder> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Icon(
-                      Icons.delete_outline,
-                      size: 15,
+
+                    GestureDetector(
+                      child: Icon(
+                      Icons.delete,
+                      size: 20,
                       color: Colors.red,
                     ),
-                    GestureDetector(
-                      child: Text(
-                        " Delete",
-                        style:
-                            TextStyle(fontFamily: fFamily, color: Colors.red),
-                      ),
-                      onTap: () {
+                      onTap: () async {
+                        final successful = await deleteAd(docs);
                         widget._uniqueKey = docs['time'];
-                        setState(() {
+                        if(successful)
+                          setState(()  {
                           _animated = !_animated;
+
                         });
 //                        _showUploadingSnackBar(Duration(minutes: 1));
                       },
