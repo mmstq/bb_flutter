@@ -317,7 +317,7 @@ class _BuyState extends State<Buy> {
 
 Stream<QuerySnapshot> _getSort(Category category) {
   CollectionReference collectionReference =
-      Firestore.instance.collection('ads');
+      Firestore.instance.collection('adss');
   var query;
 
   if (category == Category.Medical) {

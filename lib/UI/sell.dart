@@ -14,9 +14,13 @@ class Sell extends StatefulWidget {
 }
 
 class _SellState extends State<Sell> {
+
   final Map<String, dynamic> _map = new Map();
+
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final _enableBorder = const OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(6)),
     borderSide: BorderSide(color: Colors.white70),
@@ -46,9 +50,9 @@ class _SellState extends State<Sell> {
   var _isFree = false;
   File _photo;
   File _thumbnail;
-  bool _count = false;
   int _timeStamp;
-  var _uploadTask;
+
+  bool _count = false;
 
   @override
   void initState() {
@@ -81,7 +85,7 @@ class _SellState extends State<Sell> {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               children: <Widget>[
                 Text(
@@ -103,7 +107,7 @@ class _SellState extends State<Sell> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
-                  height: 15,
+                  height: 10,
                 ),
                 Builder(
                   builder: (context) => Form(
@@ -138,20 +142,19 @@ class _SellState extends State<Sell> {
                         ),
                         TextFormField(
                           style: _textStyle,
-                          maxLines: 3,
+                          maxLines: 2,
                           maxLength: 180,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.description),
                             labelStyle: TextStyle(color: Colors.white),
                             labelText: 'Description',
-                            helperText: "like edition, semester, author etc.",
+                            helperText: "like edition, author etc.",
                             enabledBorder: _enableBorder,
                             focusedBorder: _focusBorder,
                             focusedErrorBorder: _focusBorder,
                             errorBorder: _errorBorder,
                           ),
                           validator: (String value) {
-                            print("des validate");
                             if (value == "") {
                               return "Enter Description";
                             }
@@ -162,7 +165,7 @@ class _SellState extends State<Sell> {
                           },
                         ),
                         SizedBox(
-                          height: 12,
+                          height: 10,
                         ),
                         TextFormField(
                           style: _textStyle,
@@ -187,7 +190,7 @@ class _SellState extends State<Sell> {
                           },
                         ),
                         SizedBox(
-                          height: 12,
+                          height: 10,
                         ),
                         TextFormField(
                           style: _textStyle,
@@ -216,74 +219,12 @@ class _SellState extends State<Sell> {
                         SizedBox(
                           height: 10,
                         ),
-                        Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: new DropdownButton<String>(
-                              underline: Container(),
-                              hint: Row(
-                                children: <Widget>[
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Icon(Icons.category),
-                                  Text(
-                                    (_category == null)
-                                        ? "  Select Category"
-                                        : "  :  " + _category,
-                                    style: _textStyle,
-                                  ),
-                                ],
-                              ),
-                              isExpanded: true,
-                              items: <String>[
-                                'B.Tech',
-                                'Law',
-                                'M.Tech',
-                                'Medical',
-                                'PhD',
-                                'Other'
-                              ].map((String value) {
-                                return new DropdownMenuItem<String>(
-                                  value: value,
-                                  child: new Text(
-                                    value,
-                                    style: _textStyle,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (item) {
-                                print(item);
-                                setState(() {
-                                  _category = item;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 5),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (Widget child,
-                                    Animation<double> animation) {
-                                  return ScaleTransition(
-                                      child: child, scale: animation);
-                                },
-                                child: Image.asset(
-                                  _count
-                                      ? "assets/happy.png"
-                                      : "assets/normal.png",
-                                  height: 25,
-                                  key: ValueKey<bool>(_count),
-                                ),
-                              ),
                               Checkbox(
                                 value: _isFree,
                                 onChanged: ((value) {
@@ -292,7 +233,6 @@ class _SellState extends State<Sell> {
                                     if (value) _price = "Free";
                                     print(_price);
                                     _isFree = value;
-                                    _count = value;
                                   });
                                 }),
                               ),
@@ -372,6 +312,53 @@ class _SellState extends State<Sell> {
                               ),
                             ),
                           ],
+                        ),
+                        Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: new DropdownButton<String>(
+                              underline: Container(),
+                              hint: Row(
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Icon(Icons.category),
+                                  Text(
+                                    (_category == null)
+                                        ? "  Select Category"
+                                        : "  :  " + _category,
+                                    style: _textStyle,
+                                  ),
+                                ],
+                              ),
+                              isExpanded: true,
+                              items: <String>[
+                                'B.Tech',
+                                'Law',
+                                'M.Tech',
+                                'Medical',
+                                'PhD',
+                                'Other'
+                              ].map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(
+                                    value,
+                                    style: _textStyle,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (item) {
+                                print(item);
+                                setState(() {
+                                  _category = item;
+                                });
+                              },
+                            ),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 12.0),
@@ -536,7 +523,7 @@ class _SellState extends State<Sell> {
                 ),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  _photo = await _openImagePicker(ImageSource.camera);
+                  _photo = await _imagePicker(ImageSource.camera);
                   setState(() {});
                 },
               ),
@@ -557,7 +544,7 @@ class _SellState extends State<Sell> {
                 ),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  _photo = await _openImagePicker(ImageSource.gallery);
+                  _photo = await _imagePicker(ImageSource.gallery);
                   setState(() {});
                 },
               ),
@@ -594,18 +581,19 @@ class _SellState extends State<Sell> {
     );
   }
 
-  Future<File> _openImagePicker(ImageSource source) async {
+  Future<File> _imagePicker(ImageSource source) async {
     print('_openImagePicker()');
+
     _photo = await ImagePicker.pickImage(
-        source: source, imageQuality: 10, maxHeight: 800, maxWidth: 800);
+        source: source, imageQuality: 10, maxHeight: 1000, maxWidth: 1000);
     final Directory directory = await getTemporaryDirectory();
     final copyFile = await _photo.copy('${directory.path}/photo.png');
     final image = img.decodeImage(new File(copyFile.path).readAsBytesSync());
     _thumbnail = new File('${directory.path}/thumbnail.png')
       ..writeAsBytesSync(img.encodePng(img.copyResize(
         image,
-        width: 50,
-        height: 50,
+        width: 80,
+        height: 80,
       )));
     return _photo;
   }
@@ -701,21 +689,25 @@ class _SellState extends State<Sell> {
 
   Future<void> _sendToServer(BuildContext context) async {
     _showUploadingSnackBar(Duration(hours: 1));
+
     print('sendToServer');
 
     if (_photo != null) {
+      debugPrint('uploading');
       _photoUrl = await _getUploadUrl(_photo, false);
+      debugPrint('photo Uploade');
+
       _thumbnailUrl = await _getUploadUrl(_thumbnail, true);
+      debugPrint('thumb uploaded');
     }
 
     _map['book'] = _bookName;
     _map['description'] = _description;
     _map['address'] = _address;
     _map['price'] = _price;
-    print(_price);
     _map['category'] = _category;
-    _map['isDeleted'] = false;
     _map['phone'] = phone;
+    _map['isDeleted'] = false;
     _map['time'] = _timeStamp;
     _map['thumbnail'] = _thumbnailUrl;
     _map['image'] = _photoUrl;
@@ -723,7 +715,7 @@ class _SellState extends State<Sell> {
 
     Firestore.instance.runTransaction((Transaction transaction) async {
       DocumentReference collectionReference =
-          Firestore.instance.collection('ads').document(_timeStamp.toString());
+          Firestore.instance.collection('adss').document(_timeStamp.toString());
       await collectionReference.setData(_map).whenComplete(() async {
         _scaffoldKey.currentState.hideCurrentSnackBar();
         await Future.delayed(Duration(milliseconds: 200));
@@ -733,6 +725,8 @@ class _SellState extends State<Sell> {
           Duration(seconds: 2),
         );
         await Future.delayed(Duration(milliseconds: 2200));
+        _scaffoldKey.currentState.hideCurrentSnackBar();
+        await Future.delayed(Duration(milliseconds: 800));
         Navigator.of(context).pop();
       }).catchError((error) {
         showSnackBar(

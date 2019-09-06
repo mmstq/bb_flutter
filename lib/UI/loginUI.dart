@@ -207,13 +207,13 @@ class _LoginPageState extends State<LoginPage> {
       FirebaseAuth auth, BuildContext context, String phoneRaw) async {
     final PhoneVerificationCompleted verificationCompleted =
         (AuthCredential credential) {
-      /*auth.signInWithCredential(credential).then((FirebaseUser user) async {
+      auth.signInWithCredential(credential).then((FirebaseUser user) async {
         final FirebaseUser _user = await auth.currentUser();
         if (user.uid == _user.uid) {
           isOTP = false;
           debugPrint("completed: " + user.uid);
         }
-      });*/
+      });
     };
 
     final PhoneVerificationFailed phoneVerificationFailed =

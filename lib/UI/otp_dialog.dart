@@ -245,9 +245,9 @@ class _OtpDialogState extends State<OtpDialog> {
         .then((FirebaseUser user) async {
       final FirebaseUser _user = await _auth.currentUser();
       if (user.uid == _user.uid) {
-//        Navigator.of(context).pop();
+        Navigator.of(context).pop();
         print('success');
-//        Navigator.of(context).pushNamedAndRemoveUntil('Main', (Route<dynamic> route)=> false);
+        Navigator.of(context).pushNamedAndRemoveUntil('Main', (Route<dynamic> route)=> false);
       }else{
         print("else of SIWPN");
       }
