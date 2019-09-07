@@ -3,6 +3,7 @@ import 'package:bookbuddy/UI/caution_dialog.dart';
 import 'package:bookbuddy/UI/donate.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
 class DrawerMenu extends StatelessWidget {
   final menuItemsStyle = TextStyle(
@@ -58,7 +59,13 @@ class DrawerMenu extends StatelessWidget {
                   'Share',
                   style: menuItemsStyle,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  Share.share("BookBuddy Is A University Exclusive App To Buy,"
+                      " Sell Or Donate Used Books Within MDU Campus Only"
+                      "\nDownload Now.\n"
+                      "Link:___");
+                },
               ),
               new Divider(),
               new ListTile(
@@ -72,7 +79,6 @@ class DrawerMenu extends StatelessWidget {
                 ),
                 onTap: () {
                   showCautionDialog(context);
-
                 },
               ),
               new Divider(),

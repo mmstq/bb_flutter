@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       },
       title: 'Flutter Demo',
       theme: getTheme(isDark),
-      home: (user == null)
+      home: (user != null)
           ? MainScreen()
           : LoginPage(),
     );

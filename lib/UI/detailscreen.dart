@@ -343,7 +343,7 @@ Stream<QuerySnapshot> _getSort(Category category) {
 
 String getTime(int time) {
   final f = new DateFormat('E, dd-MM-yy hh:mm a');
-  return f.format(new DateTime.fromMillisecondsSinceEpoch(time * 1000));
+  return f.format(new DateTime.fromMillisecondsSinceEpoch(time));
 }
 
 class ListBuilder extends StatefulWidget {
