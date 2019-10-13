@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class MyAds extends StatelessWidget {
 
   final _stream = Firestore.instance
-      .collection('adss')
+      .collection('ads')
       .where('phone', isEqualTo: phone)
       .orderBy('time', descending: true)
       .snapshots();

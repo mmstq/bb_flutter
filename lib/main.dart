@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         'Main':(context)=> LoginPage(),
         'Detail':(context)=> LoginPage(),
       },
-      title: 'Flutter Demo',
+      title: 'BookBuddy',
       theme: getTheme(isDark),
       home: (user == null)
           ? MainScreen()

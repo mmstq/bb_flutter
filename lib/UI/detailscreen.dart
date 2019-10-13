@@ -317,7 +317,7 @@ class _BuyState extends State<Buy> {
 
 Stream<QuerySnapshot> _getSort(Category category) {
   CollectionReference collectionReference =
-      Firestore.instance.collection('adss');
+      Firestore.instance.collection('ads');
   var query;
 
   if (category == Category.Medical) {
@@ -372,114 +372,107 @@ class _ListBuilderState extends State<ListBuilder> {
         if (snapshot.hasData) {
           return ListView(
               children: snapshot.data.documents.map((docs) {
-            if (!docs["isDeleted"]) {
-              return Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Card(
-                    elevation: 8,
-                    child: Container(
-                      height: 110,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Container(
+            return Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Card(
+                  elevation: 8,
+                  child: Container(
+                    height: 110,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Container(
+                            constraints:
+                                new BoxConstraints(maxWidth: _width * 0.20),
+                            child: Column(
+                              children: <Widget>[
+                                Hero(
+                                  tag: "main${docs['time']}",
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(5),
+                                      child: docs['thumbnail'] != null
+                                          ? Image.network(
+                                              docs['thumbnail'],
+                                              height: 60,
+                                              fit: BoxFit.fill,
+                                            )
+                                          : Image.asset(
+                                              'assets/no_image.png',
+                                              height: 60,
+                                              fit: BoxFit.fill,
+                                            )),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                _priceOrDelete(docs),
+                              ],
+                              mainAxisSize: MainAxisSize.min,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) =>
+                                          new DetailedScreen(docs)));
+                            },
+                            child: Container(
                               constraints:
-                                  new BoxConstraints(maxWidth: _width * 0.20),
+                                  new BoxConstraints(maxWidth: _width * 0.70),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Hero(
-                                    tag: "main${docs['time']}",
-                                    child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
-                                        child: docs['thumbnail'] != null
-                                            ? Image.network(
-                                                docs['thumbnail'],
-                                                height: 60,
-                                                fit: BoxFit.fill,
-                                              )
-                                            : Image.asset(
-                                                'assets/no_image.png',
-                                                height: 60,
-                                                fit: BoxFit.fill,
-                                              )),
+                                  Text(
+                                    docs['book'] ?? 'null',
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.white,
+                                        fontFamily: fFamily,
+                                        fontWeight: FontWeight.w400),
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: true,
+                                    maxLines: 1,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 3.0),
+                                    child: Text(
+                                      docs['description'],
+                                      style: TextStyle(
+                                          color: Colors.white54,
+                                          fontFamily: fFamily,
+                                          height: 0.9,
+                                          fontWeight: FontWeight.w300),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
                                   ),
                                   SizedBox(
-                                    height: 8,
+                                    height: 4,
                                   ),
-                                  _priceOrDelete(docs),
+                                  new Text(
+                                    " ${getTime(docs['time'])}",
+                                    style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                        fontFamily: fFamily,
+                                        fontWeight: FontWeight.w300),
+                                  )
                                 ],
                                 mainAxisSize: MainAxisSize.min,
                               ),
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            new DetailedScreen(docs)));
-                              },
-                              child: Container(
-                                constraints:
-                                    new BoxConstraints(maxWidth: _width * 0.70),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      docs['book'] ?? 'null',
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          color: Colors.white,
-                                          fontFamily: fFamily,
-                                          fontWeight: FontWeight.w400),
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: true,
-                                      maxLines: 1,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 3.0),
-                                      child: Text(
-                                        docs['description'],
-                                        style: TextStyle(
-                                            color: Colors.white54,
-                                            fontFamily: fFamily,
-                                            height: 0.9,
-                                            fontWeight: FontWeight.w300),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    new Text(
-                                      " ${getTime(docs['time'])}",
-                                      style: TextStyle(
-                                          color: Colors.grey.shade700,
-                                          fontFamily: fFamily,
-                                          fontWeight: FontWeight.w300),
-                                    )
-                                  ],
-                                  mainAxisSize: MainAxisSize.min,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    )),
-              );
-            } else {
-              return SizedBox(
-                width: 0,
-                height: 0,
-              );
-            }
+                    ),
+                  )),
+            );
           }).toList());
         } else {
           return Center(
@@ -493,16 +486,26 @@ class _ListBuilderState extends State<ListBuilder> {
 
   Future<bool> deleteAd(var docs) async {
     final reference = Firestore.instance;
-    DocumentReference dr = reference.collection('ad').document(docs['time'].toString());
-    reference.runTransaction((transaction) async {
-      await transaction.delete(dr).then((value){
+    bool _successful;
+    DocumentReference dr =
+        reference.collection('ads').document(docs['time'].toString());
+    await Future.delayed(Duration(milliseconds: 1000));
+    await dr.delete().catchError((error) {
+      debugPrint("error");
+      _successful = false;
+      _showUploadingSnackBar("Failed. Re-Try", Icon(Icons.error_outline, color: Colors.white));
 
-        return true;
-      });
+
+    }).whenComplete(() {
+      debugPrint("success");
+      _successful = true;
+      _showUploadingSnackBar("Ad Deleted Successfully", Icon(Icons.check_circle_outline, color: Colors.white));
+
     });
-    return false;
+    return _successful;
+
   }
- 
+
   Widget _priceOrDelete(var docs) {
     if (widget._isMyAds) {
       return AnimatedSwitcher(
@@ -532,21 +535,24 @@ class _ListBuilderState extends State<ListBuilder> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-
                     GestureDetector(
                       child: Icon(
-                      Icons.delete,
-                      size: 20,
-                      color: Colors.red,
-                    ),
+                        Icons.delete,
+                        size: 20,
+                        color: Colors.red,
+                      ),
                       onTap: () async {
-                        final successful = await deleteAd(docs);
                         widget._uniqueKey = docs['time'];
-                        if(successful)
-                          setState(()  {
+                        setState(() async {
                           _animated = !_animated;
+                          final successful = await deleteAd(docs);
 
-                        });
+                            if (successful){
+                              setState(() {
+
+                              });
+                            }
+                          });
 //                        _showUploadingSnackBar(Duration(minutes: 1));
                       },
                     ),
@@ -575,7 +581,7 @@ class _ListBuilderState extends State<ListBuilder> {
     );
   }
 
-  _showUploadingSnackBar(Duration duration) {
+  _showUploadingSnackBar(String msg, Icon icon) {
     widget._scaffoldKey.currentState.showSnackBar(SnackBar(
       content: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -583,21 +589,19 @@ class _ListBuilderState extends State<ListBuilder> {
           Container(
               height: 20,
               width: 20,
-              child: CircularProgressIndicator(
-                valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                strokeWidth: 2,
-              )),
+              child: icon
+              ),
           SizedBox(
             width: 10,
           ),
           Text(
-            "Uploading ad. Please wait...",
+            msg,
             maxLines: 3,
             style: _textStyle,
           ),
         ],
       ),
-      duration: duration,
+      duration: Duration(milliseconds: 1500),
       backgroundColor: Colors.indigo,
     ));
   }

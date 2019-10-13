@@ -40,6 +40,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -53,7 +54,7 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    buildToolsVersion = '29.0.1'
+    buildToolsVersion = '29.0.2'
 }
 
 flutter {

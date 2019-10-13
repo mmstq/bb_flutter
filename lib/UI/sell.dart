@@ -715,7 +715,7 @@ class _SellState extends State<Sell> {
 
     Firestore.instance.runTransaction((Transaction transaction) async {
       DocumentReference collectionReference =
-          Firestore.instance.collection('adss').document(_timeStamp.toString());
+          Firestore.instance.collection('ads').document(_timeStamp.toString());
       await collectionReference.setData(_map).whenComplete(() async {
         _scaffoldKey.currentState.hideCurrentSnackBar();
         await Future.delayed(Duration(milliseconds: 200));
