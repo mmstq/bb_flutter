@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       },
       title: 'BookBuddy',
       theme: getTheme(isDark),
-      home: (user == null)
+      home: (user != null)
           ? MainScreen()
           : LoginPage(),
     );

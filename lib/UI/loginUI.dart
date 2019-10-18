@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               SizedBox(height: height * .075),
               new Text(
-                'Welcome To BookBuddy',
+                'Welcome To\nBookBuddy',
                 style: TextStyle(
                     fontFamily: fFamily,
                     fontWeight: FontWeight.w600,
@@ -173,8 +173,8 @@ class _LoginPageState extends State<LoginPage> {
               RaisedButton(
                 shape: RoundedRectangleBorder(
                     side: BorderSide(
-                        color: Colors.blue.shade700,
-                        width: 2,
+                        color: Colors.cyanAccent,
+                        width: 1,
                         style: BorderStyle.solid),
                     borderRadius: BorderRadius.circular(5)),
                 color: Colors.lightBlueAccent,
@@ -184,16 +184,11 @@ class _LoginPageState extends State<LoginPage> {
                   sharedPreference.setString('phone', _phone);
                   _sendCodeToPhone(widget._auth, context, _phone);
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(Icons.send),
-                    Text(
-                      "   Submit",
-                      style: TextStyle(fontFamily: fFamily),
-                    )
-                  ],
+                child: Text(
+                  "Submit",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: fFamily, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -210,8 +205,13 @@ class _LoginPageState extends State<LoginPage> {
       auth.signInWithCredential(credential).then((FirebaseUser user) async {
         final FirebaseUser _user = await auth.currentUser();
         if (user.uid == _user.uid) {
-          isOTP = false;
-          debugPrint("completed: " + user.uid);
+          Navigator.of(context).pop();
+          print('completed' + user.uid);
+          Navigator.pop(context);
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('Main', (Route<dynamic> route) => false);
+        } else {
+          print("else of SIWPN");
         }
       });
     };
