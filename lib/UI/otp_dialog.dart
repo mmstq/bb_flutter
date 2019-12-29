@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:bookbuddy/Provider/SignInManually.dart';
 import 'package:bookbuddy/UI/main_screen.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OtpDialog extends StatefulWidget {
   @override
@@ -12,7 +14,6 @@ class OtpDialog extends StatefulWidget {
 
 class _OtpDialogState extends State<OtpDialog> {
   final TextEditingController _otpController = new TextEditingController();
-  Timer _timer;
 
   final TextStyle _textStyle = TextStyle(
       color: Colors.white70,
@@ -21,20 +22,13 @@ class _OtpDialogState extends State<OtpDialog> {
       fontSize: 15);
 
   @override
-  void initState() {
-    super.initState();
-    startTimer();
-  }
-
-  @override
   void dispose() {
-    countController.close();
-    _timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final _otpProvider = Provider.of<OTPSubmit>(context);
     return AlertDialog(
       contentPadding: EdgeInsets.fromLTRB(20, 24, 20, 10),
       title: Row(
@@ -68,7 +62,8 @@ class _OtpDialogState extends State<OtpDialog> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+            padding: const EdgeInsets.symmetric(
+                horizontal: 10.0, vertical: 10),
             child: TextField(
               textAlignVertical: TextAlignVertical.center,
               style: TextStyle(
@@ -122,52 +117,7 @@ class _OtpDialogState extends State<OtpDialog> {
               ),
             ),
           ),
-          StreamBuilder(
-            stream: counting,
-            initialData: 5,
-            builder: (context, snapshot) {
-              if (snapshot.data != 0) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: "Detecting OTP. Wait ", style: _textStyle),
-                          TextSpan(
-                            text: snapshot.data.toString(),
-                            style: TextStyle(
-                                color: Colors.deepOrange,
-                                fontFamily: fFamily,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 15),
-                          ),
-                          TextSpan(text: " sec ", style: _textStyle)
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 15,
-                      width: 15,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.5,
-                      ),
-                    ),
-                  ],
-                );
-              } else if (snapshot.data == 10) {
-                return Text("Wrong OTP Entered",
-                    style: TextStyle(
-                        fontSize: 15, fontFamily: fFamily, color: Colors.red));
-              }
-              return Text(
-                "Enter OTP manually",
-                style: TextStyle(fontSize: 15, fontFamily: fFamily),
-              );
-            },
-          ),
+          getRemaining(_otpProvider)
         ],
       ),
       elevation: 35,
@@ -193,7 +143,6 @@ class _OtpDialogState extends State<OtpDialog> {
                 fontSize: 18),
           ),
           onPressed: () {
-            countController.close();
             Navigator.pop(context);
           },
         ),
@@ -215,28 +164,59 @@ class _OtpDialogState extends State<OtpDialog> {
                 fontSize: 18),
           ),
           onPressed: () {
-            signInWithPhoneNumber(_otpController.text, context);
+            _otpProvider.signInWithPhoneNumber(_otpController.text, context);
           },
         )
       ],
     );
   }
 
-  void startTimer() {
-    int count = 5;
-    _timer = Timer.periodic(Duration(seconds: 1), (value) {
-      if (count < 1) {
-        _timer.cancel();
-        countController.add(0);
-      } else {
-        print("else: $count");
-        count -= 1;
-        countController.add(count);
-      }
-    });
+  Widget getRemaining(otpProvider) {
+    if (otpProvider.getCounter() != 0) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: "Detecting OTP. Wait ", style: _textStyle),
+                TextSpan(
+                  text:"${otpProvider.getCounter()}",
+                  style: TextStyle(
+                      color: Colors.deepOrange,
+                      fontFamily: fFamily,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 15),
+                ),
+                TextSpan(text: " sec ", style: _textStyle)
+              ],
+            ),
+          ),
+          Container(
+            height: 15,
+            width: 15,
+            child: CircularProgressIndicator(
+              strokeWidth: 1.5,
+            ),
+          ),
+        ],
+      );
+    } else if (11 == 10) {
+      return Text("Wrong OTP Entered",
+          style: TextStyle(
+              fontSize: 15, fontFamily: fFamily, color: Colors.red));
+    }
+    return Text(
+      "Enter OTP manually",
+      style: TextStyle(fontSize: 15, fontFamily: fFamily),
+    );
   }
+}
 
-  void signInWithPhoneNumber(String smsCode, BuildContext context) async {
+
+/*void signInWithPhoneNumber1(String smsCode, BuildContext context) async {
     FirebaseAuth _auth = FirebaseAuth.instance;
     final AuthCredential credential = PhoneAuthProvider.getCredential(
         verificationId: verificationId, smsCode: smsCode);
@@ -253,4 +233,24 @@ class _OtpDialogState extends State<OtpDialog> {
       }
     });
   }
-}
+  void signInWithPhoneNumber(String smsCode) async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    final AuthCredential credential = PhoneAuthProvider.getCredential(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
+    await _auth.signInWithCredential(credential).whenComplete(() async{
+      final FirebaseUser user = await  _auth.currentUser();
+      debugPrint('when completed'+user.uid);
+    });
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+    setState(() {
+      if (user != null) {
+        debugPrint('Successfully signed in, uid: ' + user.uid);
+      } else {
+        debugPrint('sing in failed');
+      }
+    });
+  }*/
+

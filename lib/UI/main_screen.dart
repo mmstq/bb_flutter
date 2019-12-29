@@ -3,11 +3,14 @@ import 'package:bookbuddy/UI/logout_dialog.dart';
 import 'package:bookbuddy/UI/myads.dart';
 import 'package:bookbuddy/UI/sell.dart';
 import 'package:bookbuddy/Utils/data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'detailscreen.dart';
 
 class MainScreen extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
     final _screen = MediaQuery.of(context).size;
@@ -19,6 +22,7 @@ class MainScreen extends StatelessWidget {
         title: Text("BookBuddy"),
       ),
       drawer: DrawerMenu(),
+      // All Content In The Body Section
       body: Padding(
         padding: const EdgeInsets.only(right: 8.0, left: 8.0),
         child: Column(
@@ -81,7 +85,7 @@ class MainScreen extends StatelessWidget {
                                   bottomRight: Radius.circular(4),
                                 )),
                             height: height * 0.04,
-//                              color: Colors.black26,
+                            //                              color: Colors.black26,
                             child: Center(
                               child: Text("Sell or donate books",
                                   textAlign: TextAlign.center,

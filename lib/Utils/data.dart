@@ -16,13 +16,6 @@ final phoneHelperText = "Enter number w/o +91";
 final loginDescription = "BookBuddy is an Unofficial MDU University exclusive app to buy, "
     "sell or donate used books within MDU Campus only.";
 
-final countController = StreamController();
-Stream get counting => countController.stream;
-
-
-void close(){
-  countController.close();
-}
 
 
 

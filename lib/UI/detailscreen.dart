@@ -384,6 +384,7 @@ class _ListBuilderState extends State<ListBuilder> {
                         mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
                           Container(
+                            width: 60,
                             constraints:
                                 new BoxConstraints(maxWidth: _width * 0.20),
                             child: Column(
@@ -441,13 +442,13 @@ class _ListBuilderState extends State<ListBuilder> {
                                     maxLines: 1,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 3.0),
+                                    padding: const EdgeInsets.only(left: 3.0, top: 2),
                                     child: Text(
                                       docs['description'],
                                       style: TextStyle(
                                           color: Colors.white54,
                                           fontFamily: fFamily,
-                                          height: 0.9,
+                                          height: 1.2,
                                           fontWeight: FontWeight.w300),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
@@ -513,52 +514,52 @@ class _ListBuilderState extends State<ListBuilder> {
         transitionBuilder: (Widget child, Animation<double> animation) {
           return ScaleTransition(child: child, scale: animation);
         },
-        child: (_animated && widget._uniqueKey == docs['time'])
-            ? Container(
-                key: ValueKey("first"),
-                padding: EdgeInsets.all(4),
-                height: 25,
-                width: 25,
-                child: CircularProgressIndicator(
-                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
-                  strokeWidth: 1.5,
-                ),
-              )
-            : Container(
-                key: ValueKey("second"),
-                height: 25,
-                padding: EdgeInsets.fromLTRB(1, 0, 1, 1),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.red, width: 1),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Icon(
-                        Icons.delete,
-                        size: 20,
-                        color: Colors.red,
-                      ),
-                      onTap: () async {
-                        widget._uniqueKey = docs['time'];
-                        setState(() async {
-                          _animated = !_animated;
-                          final successful = await deleteAd(docs);
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          child: (_animated && widget._uniqueKey == docs['time'])
+              ? Container(
+                  key: ValueKey("first"),
+                  padding: EdgeInsets.all(4),
+                  height: 25,
+                  width: 25,
+                  child: CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+                    strokeWidth: 1.5,
+                  ),
+                )
+              : Container(
+                  key: ValueKey("second"),
+                  height: 25,
+                  padding: EdgeInsets.fromLTRB(1, 0, 1, 1),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.red, width: 1),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        child: Text(" Delete ", style: TextStyle(color: Colors.red),
+                        ),
+                        onTap: () async {
+                          widget._uniqueKey = docs['time'];
+                          setState(() async {
+                            _animated = !_animated;
+                            /*final successful = await deleteAd(docs);
 
-                            if (successful){
-                              setState(() {
+                              if (successful){
+                                setState(() {
 
-                              });
-                            }
-                          });
+                                });
+                              }*/
+                            });
 //                        _showUploadingSnackBar(Duration(minutes: 1));
-                      },
-                    ),
-                  ],
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+        ),
       );
     }
     return Center(

@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:bookbuddy/Provider/SignInManually.dart';
 import 'package:bookbuddy/UI/otp_dialog.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
@@ -181,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   String _phone = _phoneController.text;
                   phone = _phone;
-                  sharedPreference.setString('phone', _phone);
+                  sharedPreference.setString('phone', _phone+"");
                   _sendCodeToPhone(widget._auth, context, _phone);
                 },
                 child: Text(
@@ -219,12 +221,12 @@ class _LoginPageState extends State<LoginPage> {
     final PhoneVerificationFailed phoneVerificationFailed =
         (AuthException authException) {
       print("PVF: ${authException.message}");
-      countController.add(authException.message);
     };
 
     final PhoneCodeSent phoneCodeSent =
         (String verifyId, [int forceResendingToken]) {
       verificationId = verifyId;
+      debugPrint('PhoneCodeSent');
       show();
     };
 
@@ -248,7 +250,9 @@ class _LoginPageState extends State<LoginPage> {
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
-        return OtpDialog();
+        return ChangeNotifierProvider<OTPSubmit>(
+            builder: (_) => OTPSubmit(),
+            child: OtpDialog());
       },
     );
   }

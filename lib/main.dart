@@ -5,17 +5,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:bookbuddy/UI/loginUI.dart';
 
-void main() async {
-  sharedPreference = await SharedPreferences.getInstance();
-  user = await FirebaseAuth.instance.currentUser();
-  debugPrint(user.toString());
+void main() {
   return runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
 
+  void initialiseVariable() async{
+    sharedPreference = await SharedPreferences.getInstance();
+    user = await FirebaseAuth.instance.currentUser();
+    debugPrint(user.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
+    initialiseVariable();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
