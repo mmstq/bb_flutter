@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:bookbuddy/UI/main_screen.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +20,20 @@ class OTPSubmit extends ChangeNotifier {
       verificationId: verificationId,
       smsCode: smsCode,
     );
-    await _auth.signInWithCredential(credential).whenComplete(() async {
-      final FirebaseUser user = await _auth.currentUser();
-      debugPrint('when completed uid is : ' + user.uid);
-      Navigator.pop(context);
-      Future.delayed(Duration(milliseconds: 300));
-      Navigator.push(context, MaterialPageRoute(builder: (_)=>MainScreen()));
-    });
+    final uid =
+        (await _auth.signInWithCredential(credential)).uid;
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(uid == currentUser.uid);
+      if (uid != null) {
+        debugPrint('when completed uid is : ' + uid);
+        Navigator.pop(context);
+        Future.delayed(Duration(milliseconds: 300));
+        Navigator.of(context).pushNamedAndRemoveUntil('Main', (Route<dynamic> route)=>false);
+        sharedPreference.setString('uid', uid);
+      } else {
+        debugPrint('Authentication failde');
+      }
+
   }
   void startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (value) {

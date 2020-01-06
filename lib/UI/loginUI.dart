@@ -202,20 +202,35 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _sendCodeToPhone(
       FirebaseAuth auth, BuildContext context, String phoneRaw) async {
+
     final PhoneVerificationCompleted verificationCompleted =
         (AuthCredential credential) {
-      auth.signInWithCredential(credential).then((FirebaseUser user) async {
-        final FirebaseUser _user = await auth.currentUser();
-        if (user.uid == _user.uid) {
-          Navigator.of(context).pop();
-          print('completed' + user.uid);
+      auth.signInWithCredential(credential).then((FirebaseUser user) async{
+        final FirebaseUser currentUser = await auth.currentUser();
+        assert(user.uid == currentUser.uid);
+        if (user.uid != null) {
+          debugPrint('when auto completed uid is : ' + user.uid);
           Navigator.pop(context);
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('Main', (Route<dynamic> route) => false);
+          Future.delayed(Duration(milliseconds: 300));
+          Navigator.of(context).pushNamedAndRemoveUntil('Main', (Route<dynamic> route)=>false);
+          sharedPreference.setString('uid', user.uid);
         } else {
-          print("else of SIWPN");
+          debugPrint('Authentication failed auto');
         }
       });
+          /*.whenComplete((){
+
+        Navigator.of(context).pop();
+        print('completed' + user.uid);
+        Navigator.pop(context);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('Main', (Route<dynamic> route) => false);
+
+      }).catchError((){
+
+        print('failed loginUI 216' + user.uid);
+
+      });*/
     };
 
     final PhoneVerificationFailed phoneVerificationFailed =
@@ -227,6 +242,7 @@ class _LoginPageState extends State<LoginPage> {
         (String verifyId, [int forceResendingToken]) {
       verificationId = verifyId;
       debugPrint('PhoneCodeSent');
+      FocusScope.of(context).requestFocus(FocusNode());
       show();
     };
 

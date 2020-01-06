@@ -164,6 +164,7 @@ class _OtpDialogState extends State<OtpDialog> {
                 fontSize: 18),
           ),
           onPressed: () {
+            FocusScope.of(context).requestFocus(FocusNode());
             _otpProvider.signInWithPhoneNumber(_otpController.text, context);
           },
         )

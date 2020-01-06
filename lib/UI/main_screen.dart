@@ -3,14 +3,10 @@ import 'package:bookbuddy/UI/logout_dialog.dart';
 import 'package:bookbuddy/UI/myads.dart';
 import 'package:bookbuddy/UI/sell.dart';
 import 'package:bookbuddy/Utils/data.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'detailscreen.dart';
+
 
 class MainScreen extends StatelessWidget {
-
-
   @override
   Widget build(BuildContext context) {
     final _screen = MediaQuery.of(context).size;
@@ -106,9 +102,7 @@ class MainScreen extends StatelessWidget {
                   color: Color(0xFF49c423),
                   child: MaterialButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return new Buy();
-                      }));
+                      Navigator.of(context).pushNamed('Buy');
                     },
                     padding: EdgeInsets.all(0),
                     child: Container(

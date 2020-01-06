@@ -1,5 +1,6 @@
 
 
+import 'package:bookbuddy/Utils/data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,8 @@ showAlertDialog(BuildContext context) {
     color: Color(0xE276FF03),
     child: Icon(Icons.check,color: Colors.green.shade600,),
     onPressed: () {
-      FirebaseAuth.instance.signOut().then((error){
+      FirebaseAuth.instance.signOut().then((_){
+        sharedPreference.setString('uid', null);
         Navigator.of(context).pushNamedAndRemoveUntil('Login', (Route<dynamic> rout)=>false);
       });
 
