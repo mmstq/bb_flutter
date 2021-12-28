@@ -25,27 +25,27 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   #  cupertino_icons: ^0.1.2
 
-  provider: ^2.0.0+1
-  cloud_firestore: ^0.12.7
-  path_provider: ^1.2.0
-  filesize: 1.0.4
-  url_launcher: ^5.1.0
-  firebase_storage:  ^3.0.4
-  image_picker: ^0.6.1
-  shared_preferences: ^0.5.3+4
-  firebase_auth: ^0.11.1+12
-  countdown: ^0.1.0
-  image: ^2.1.4
-  share: ^0.6.2+1
-  intl: ^0.15.2
-  rxdart: ^0.18.1
+  provider: any
+  cloud_firestore: any
+  path_provider: any
+  filesize: any
+  url_launcher: any
+  firebase_storage:  any
+  image_picker: ^0.8.4+4
+  shared_preferences: any
+  firebase_auth: any
+  countdown: any
+  image: any
+  share: any
+  intl: any
+  rxdart: any
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_launcher_icons: ^0.7.4
+  flutter_launcher_icons: ^0.9.2
 
 flutter_icons:
   image_path: "icon/icon.png"

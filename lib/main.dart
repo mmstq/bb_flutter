@@ -15,13 +15,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      routes: {
-        'Login': (context) => LoginPage(),
-        'Buy': (context) => Buy(),
-        'Sell': (context) => Sell(),
-        'Main': (context) => MainScreen(),
-        'Splash': (context) => SplashScreen(),
-      },
+      // routes: {
+      //   'Login': (context) => LoginPage(),
+      //   'Buy': (context) => Buy(),
+      //   'Sell': (context) => Sell(),
+      //   'Main': (context) => MainScreen(),
+      //   'Splash': (context) => SplashScreen(),
+      // },
       title: 'BookBuddy',
       theme: getTheme(isDark),
       home: SplashScreen(),
@@ -99,14 +99,14 @@ class SplashScreen extends StatelessWidget {
   }
 
   void initiate(BuildContext context) async {
-    sharedPreference = await SharedPreferences.getInstance();
-    userUID = sharedPreference.get('uid') ?? null;
-    await Future.delayed(Duration(seconds: 1));
-    Navigator.of(context).pushAndRemoveUntil(
-        (userUID == null)
-            ?CustomPageBuilder(LoginPage())
-            : CustomPageBuilder(MainScreen()),
-        (Route<dynamic> route) => false);
+    // sharedPreference = await SharedPreferences.getInstance();
+    // userUID = sharedPreference.get('uid') ?? null;
+    // await Future.delayed(Duration(seconds: 1));
+    // Navigator.of(context).pushAndRemoveUntil(
+    //     (userUID == null)
+    //         ?CustomPageBuilder(LoginPage())
+    //         : CustomPageBuilder(MainScreen()),
+    //     (Route<dynamic> route) => false);
   }
 }
 
