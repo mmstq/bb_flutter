@@ -1,12 +1,14 @@
 import 'package:bookbuddy/UI/detailscreen.dart';
 import 'package:bookbuddy/UI/main_screen.dart';
 import 'package:bookbuddy/UI/sell.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bookbuddy/Utils/data.dart';
 import 'package:bookbuddy/UI/loginUI.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+
   return runApp(MyApp());
 }
 
@@ -15,19 +17,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // routes: {
-      //   'Login': (context) => LoginPage(),
-      //   'Buy': (context) => Buy(),
-      //   'Sell': (context) => Sell(),
-      //   'Main': (context) => MainScreen(),
-      //   'Splash': (context) => SplashScreen(),
-      // },
+      routes: {
+        'Login': (context) => LoginPage(),
+        'Buy': (context) => Buy(),
+        'Sell': (context) => Sell(),
+        'Main': (context) => MainScreen(),
+        'Splash': (context) => SplashScreen(),
+      },
       title: 'BookBuddy',
       theme: getTheme(isDark),
-      home: SplashScreen(),
-      /*FutureBuilder(
+      home: FutureBuilder(
         future: SharedPreferences.getInstance(),
-        builder: (context, AsyncSnapshot<SharedPreferences> snapshot){
+        builder: (context, AsyncSnapshot snapshot){
+          Firebase.initializeApp();
+
           if(snapshot.connectionState == ConnectionState.done) {
             sharedPreference = snapshot.data;
             debugPrint("futurebuilder: ${snapshot.data.getString('uid')}");
@@ -37,7 +40,7 @@ class MyApp extends StatelessWidget {
             return SplashScreen();
           }
         },
-      ),*/
+      ),
     );
   }
 
@@ -49,7 +52,7 @@ class MyApp extends StatelessWidget {
         primaryColorDark: Color(0xFF090f17),
         primaryColorLight: Color(0xFF141e2b),
         scaffoldBackgroundColor: Color(0xFF141e2b),
-        accentColor: Colors.blue,
+        // accentColor: Colors.blue,
         dialogBackgroundColor: Color(0xFF1c2b3d),
         primarySwatch: Colors.blue,
         cardColor: Color(0xFF1c2b3d),
@@ -86,17 +89,17 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  Route _createRoute(Widget route) {
-    return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => route,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          animation = CurvedAnimation(parent: animation, curve: Curves.ease);
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        });
-  }
+  // Route _createRoute(Widget route) {
+  //   return PageRouteBuilder(
+  //       pageBuilder: (context, animation, secondaryAnimation) => route,
+  //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+  //         animation = CurvedAnimation(parent: animation, curve: Curves.ease);
+  //         return FadeTransition(
+  //           opacity: animation,
+  //           child: child,
+  //         );
+  //       });
+  // }
 
   void initiate(BuildContext context) async {
     // sharedPreference = await SharedPreferences.getInstance();

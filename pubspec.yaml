@@ -25,20 +25,21 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   #  cupertino_icons: ^0.1.2
 
-  provider: any
-  cloud_firestore: any
-  path_provider: any
-  filesize: any
-  url_launcher: any
-  firebase_storage:  any
-  image_picker: ^0.8.4+4
-  shared_preferences: any
-  firebase_auth: any
-  countdown: any
-  image: any
-  share: any
-  intl: any
-  rxdart: any
+  provider:
+  cloud_firestore:
+  path_provider:
+  filesize:
+  url_launcher:
+  firebase_storage:
+  image_picker:
+  firebase_core:
+  shared_preferences:
+  firebase_auth:
+  countdown:
+  image:
+  share:
+  intl:
+  rxdart:
 
 
 dev_dependencies:

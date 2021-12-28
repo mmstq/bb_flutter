@@ -28,7 +28,7 @@ class _OtpDialogState extends State<OtpDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final _otpProvider = Provider.of<OTPSubmit>(context);
+    final _otpProvider = Provider.of(context);
     return AlertDialog(
       contentPadding: EdgeInsets.fromLTRB(20, 24, 20, 10),
       title: Row(
